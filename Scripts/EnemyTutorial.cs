@@ -1,9 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 
-public class EnemyC : MonoBehaviour
+public class EnemyTutorial : MonoBehaviour
 {
     [SerializeField] private Transform start;
     [SerializeField] private Transform end;
@@ -15,18 +14,17 @@ public class EnemyC : MonoBehaviour
     float timeLeft = 5;
     public float speed = .1f;
     int timesHit = 0;
+    int playerSeen2;
     int light;
-    int Edead;
-    int playerSeen1;
     public Transform Character;
     public bool dead;
     public bool playerSeen;
     bool timeStart;
-     public bool playerDead;
+    public bool playerDead;
     bool startPath;
     bool endPath;
     bool hit;
-   public bool facingRight = true;
+    public bool facingRight = true;
     Vector3 localScale;
     private Vector3 directionOfCharacter;
     // Start is called before the first frame update
@@ -36,21 +34,20 @@ public class EnemyC : MonoBehaviour
         anim = GetComponent<Animator>();
         cc = GetComponent<CapsuleCollider2D>();
         localScale = transform.localScale;
-        transform.position = start.position;
-        PlayerPrefs.SetInt("EDead", 0);
-        PlayerPrefs.SetInt("PlayerSeen", 0);
+       // transform.position = start.position;
+        PlayerPrefs.SetInt("PlayerSeen2", 0);
+
     }
 
     // Update is called once per frame
     void Update()
     {
         Prefs();
-      
         //if no player then doesnt do anythinf
         if (Character != null)
         {
-        
-       
+
+
             if (dead)
             {
                 anim.SetTrigger("Dead");
@@ -59,7 +56,7 @@ public class EnemyC : MonoBehaviour
             }
             else if (dead == false && playerSeen == false)
             {
-                Path();
+               // Path();
             }
 
             if (timeStart && timeLeft > 0)
@@ -79,7 +76,7 @@ public class EnemyC : MonoBehaviour
 
                 directionOfCharacter = Character.transform.position - transform.position;
                 directionOfCharacter = directionOfCharacter.normalized;    // Get Direction to Move Towards
-                transform.Translate(directionOfCharacter * speed * Time.deltaTime, Space.World);
+                transform.Translate(directionOfCharacter * speed, Space.World);
                 anim.SetTrigger("Attack");
                 knife.IsFiring = true;
                 if (Character.transform.position.x < transform.position.x)
@@ -94,6 +91,7 @@ public class EnemyC : MonoBehaviour
             else
             {
                 knife.IsFiring = false;
+
             }
 
             if (((facingRight) && (localScale.x < 0)) || ((!facingRight) && (localScale.x > 0)))
@@ -103,6 +101,7 @@ public class EnemyC : MonoBehaviour
             transform.localScale = localScale;
 
             light = PlayerPrefs.GetInt("Lights");
+
             if (light == 0)
             {
                 playerSeen = false;
@@ -116,23 +115,15 @@ public class EnemyC : MonoBehaviour
         else
         {
             playerDead = true;
-          
+
         }
     }
+
     void Prefs()
     {
-        Edead = PlayerPrefs.GetInt("EDead");
-        playerSeen1 = PlayerPrefs.GetInt("PlayerSeen");
-        if (Edead == 0)
-        {
-            dead = false;
-        }
-        else
-        {
-            dead = true;
-        }
+        playerSeen2 = PlayerPrefs.GetInt("PlayerSeen2");
 
-        if (playerSeen1 == 0)
+        if (playerSeen2 == 0)
         {
             playerSeen = false;
         }
@@ -147,33 +138,29 @@ public class EnemyC : MonoBehaviour
         {
             dead = true;
             sight.enabled = false;
-        } 
+        }
     }
-
+/*
     private void OnDrawGizmos()
     {
         Gizmos.DrawCube(start.position, Vector3.one * 0.1f);
         Gizmos.DrawCube(end.position, Vector3.one * 0.1f);
     }
-
+*/
     void Path()
     {
-        if (start != null && end != null)
+        if (startPath)
         {
-            anim.SetBool("Walking", true);
-            if (startPath)
-            {
-                transform.position = Vector2.Lerp(transform.position, end.position, Time.deltaTime * .35f);
-                facingRight = true;
-                timeStart = true;
-            }
-            if (endPath)
-            {
-                transform.position = Vector2.Lerp(transform.position, start.position, Time.deltaTime * .35f);
-                facingRight = false;
-                timeStart = true;
+            transform.position = Vector2.Lerp(transform.position, end.position, Time.deltaTime * 1);
+            facingRight = false;
+            timeStart = true;
+        }
+        if (endPath)
+        {
+            transform.position = Vector2.Lerp(transform.position, start.position, Time.deltaTime * 1);
+            facingRight = true;
+            timeStart = true;
 
-            }
         }
     }
 }
